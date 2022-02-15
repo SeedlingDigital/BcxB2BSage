@@ -81,7 +81,7 @@ public class ScheduledTask  extends TimerTask {
                         fileProperties.getGardenCenterCd()));
             }
         }
-        if (GlobalValues.auditJrnlModelList != null) {
+        if (GlobalValues.auditJrnlModelList != null || GlobalValues.auditJrnlModelList.size() > 0) {
             writeAuditReport();
         }
 

@@ -67,10 +67,12 @@ public class CsvFile {
         });
 
         //Loop through all files and return the file name in a list
-        for (File file : files) {
-            fileList.add(file.toString().replace(path.concat(pathDivider), ""));
-        }
 
+        if(files != null ) {
+            for (File file : files) {
+                fileList.add(file.toString().replace(path.concat(pathDivider), ""));
+            }
+        }
         //Return value
         return fileList;
     }//End of getFilePerPath
@@ -95,10 +97,11 @@ public class CsvFile {
             returnList = getFilePerPath(mainDirectory, pathDivider, extension);
 
             //Loop through the returned list and add it to the main return object
-            for (String files : returnList) {
-                fileList.add(new FileProperties(mainDirectory, null, files, gardenCenterCd));
+            if(returnList != null) {
+                for (String files : returnList) {
+                    fileList.add(new FileProperties(mainDirectory, null, files, gardenCenterCd));
+                }
             }
-
         } else {
             //Loop through all provided sub direcotires
             //Build up the main Path
@@ -109,8 +112,10 @@ public class CsvFile {
             returnList = getFilePerPath(path, pathDivider, extension);
 
             //Loop through the returned list and add it to the main return object
-            for (String files : returnList) {
-                fileList.add(new FileProperties(path, subDirectory, files, gardenCenterCd));
+            if(returnList != null) {
+                for (String files : returnList) {
+                    fileList.add(new FileProperties(path, subDirectory, files, gardenCenterCd));
+                }
             }
 
         }
