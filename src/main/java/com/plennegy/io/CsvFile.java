@@ -88,15 +88,21 @@ public class CsvFile {
         //This will be the list returned from the getFiles per path method
         List<String> returnList = new ArrayList<>();
 
+        System.out.println("1. Get files from " + mainDirectory);
+
+
         //Check if any sub directories was supplied
         if (subDirectory == null) {
-            //For no sub directories
 
+            //For no sub directories
+            System.out.println("Attempting to get the files from our directory");
             //Pass the main directory + the sub directory along with the pathdivider and the extension
             //All files names will be returned per sub directory
             returnList = getFilePerPath(mainDirectory, pathDivider, extension);
 
+            System.out.println("Managed to get " + returnList.size() + " files");
             //Loop through the returned list and add it to the main return object
+
             if(returnList != null) {
                 for (String files : returnList) {
                     fileList.add(new FileProperties(mainDirectory, null, files, gardenCenterCd));
