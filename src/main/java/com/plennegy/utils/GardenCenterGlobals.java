@@ -5,7 +5,8 @@ public enum GardenCenterGlobals {
     ROSEBANKACCCD("60022"),
     WESTCOASTCD("WEST"),
     WESTCOASTACCCD("60021"),
-    GCVATACCD("69030");
+    GCVATACCD("69030"),
+    NOVENDOPRLINKED("Vendor Not Linked to SAGE"),;
 
 
 

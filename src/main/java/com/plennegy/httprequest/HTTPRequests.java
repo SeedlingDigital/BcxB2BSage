@@ -16,6 +16,8 @@ import java.util.List;
 
 public class HTTPRequests {
     private String baseUrl = "http://localhost:8082/sagex3/bcx/list/";// "http://api.plennegy.com/sagex3/bcx/list/";  //"/ROSE/476";
+    private String baseUrlList = "http://localhost:8082/sagex3/bcx/list";// "http://api.plennegy.com/sagex3/bcx/list/";  //"/ROSE/476";
+    private String baseUrlListtmp = "http://test.api.plennegy.com/sagex3/bcx/list";
     private URI uri;
     private RestTemplate restTemplate = new RestTemplate();
     private BcxVendorLink bcxVendorLink = new BcxVendorLink();
@@ -36,6 +38,31 @@ public class HTTPRequests {
 
         return connectionsModel;
 
+    }
+
+    public List<BcxVendorLink> getBcxVendorList() throws URISyntaxException {
+
+        List<BcxVendorLink> bcxVendorLinkList = new ArrayList<>();
+
+        try {
+
+            String connectionString = baseUrlListtmp;//baseUrlList;
+            uri = new URI(connectionString);
+
+            ResponseEntity<List<BcxVendorLink>> responseEntity = restTemplate.exchange(connectionString, HttpMethod.GET, null,
+                    new ParameterizedTypeReference<List<BcxVendorLink>>() {});
+            //result = restTemplate.getForEntity(uri, String.class);
+
+            bcxVendorLinkList = responseEntity.getBody();
+
+
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+
+        return bcxVendorLinkList;
     }
 
 

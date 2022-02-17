@@ -54,6 +54,15 @@ public class CsvFile {
         //Get the Direcotory as a File object
         File dir = new File(path);
 
+        String fileContents[] = dir.list();
+
+        if(fileContents != null) {
+            System.out.println("Files Contents" + fileContents.length);
+        }
+        else
+        {
+            System.out.println("Files null");
+        }
         //Get all files based on the location and the extension
         File[] files = dir.listFiles(new FilenameFilter() {
             public boolean accept(File dir, String name) {
@@ -68,10 +77,16 @@ public class CsvFile {
 
         //Loop through all files and return the file name in a list
 
-        if(files != null ) {
+
+        if (files != null) {
+            System.out.println("Files " + files.length);
+
             for (File file : files) {
                 fileList.add(file.toString().replace(path.concat(pathDivider), ""));
             }
+        } else
+        {
+            System.out.println("Files 0");
         }
         //Return value
         return fileList;
@@ -186,6 +201,31 @@ public class CsvFile {
     private void writeBulkJournalImportFile(String filePath, String gardenCenterCd, List<GardenCenterModel> gardenCenterModelList) {
         String filename = "GC_BulkJrnlImport" + Dates.genericDate("ddMMyyyy");
         boolean validRecord = false;
+        String bprNumber = null;
+
+
+        //Get all bcx Records
+        //Get Http request test
+        HTTPRequests httpRequests = new HTTPRequests();
+        List<BcxVendorLink> bcxVendorLinkList = new ArrayList<>();
+        try {
+            bcxVendorLinkList = httpRequests.getBcxVendorList();  //"ROSE", "476"
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+
+        //If we found a valid link then we can proceed else
+//        if (bcxVendorLinkList.size() > 0) {
+//
+//            validRecord = true;
+
+//            String bprNumber = null;
+//            for (BcxVendorLink bcxVendorLink : bcxVendorLinkList) {
+//                bprNumber = String.valueOf(bcxVendorLink.getBpCodeSageX3());
+//            }
+
+
+
 
         if (gardenCenterModelList != null) {
 
@@ -218,26 +258,40 @@ public class CsvFile {
                     accountCd = GardenCenterGlobals.ROSEBANKACCCD.label;
                 }
 
-                //Get Http request test
-                HTTPRequests httpRequests = new HTTPRequests();
-                List<BcxVendorLink> bcxVendorLinkList = new ArrayList<>();
-                try {
-                    bcxVendorLinkList = httpRequests.getLinkValue(gardenCenterCd, gardenCenterModel.getBcxUniqueAccountNumber());  //"ROSE", "476"
-                } catch (URISyntaxException e) {
-                    e.printStackTrace();
-                }
+//                //Get Http request test
+//                HTTPRequests httpRequests = new HTTPRequests();
+//                List<BcxVendorLink> bcxVendorLinkList = new ArrayList<>();
+//                try {
+//                    bcxVendorLinkList = httpRequests.getLinkValue(gardenCenterCd, gardenCenterModel.getBcxUniqueAccountNumber());  //"ROSE", "476"
+//                } catch (URISyntaxException e) {
+//                    e.printStackTrace();
+//                }
+//
+//                //If we found a valid link then we can proceed else
+//                if (bcxVendorLinkList.size() > 0) {
+//
+//                    validRecord = true;
+//
+//                    String bprNumber = null;
+//                    for (BcxVendorLink bcxVendorLink : bcxVendorLinkList) {
+//                        bprNumber = String.valueOf(bcxVendorLink.getBpCodeSageX3());
+//                    }
 
-                //If we found a valid link then we can proceed else
-                if (bcxVendorLinkList.size() > 0) {
 
-                    validRecord = true;
-
-                    String bprNumber = null;
-                    for (BcxVendorLink bcxVendorLink : bcxVendorLinkList) {
+                bprNumber = "NOCODE";
+                for (BcxVendorLink bcxVendorLink : bcxVendorLinkList)
+                {
+                    if(gardenCenterModel.getBcxUniqueAccountNumber().equals(bcxVendorLink.getBcxCode()))
+                    {
                         bprNumber = String.valueOf(bcxVendorLink.getBpCodeSageX3());
                     }
 
+                }
 
+
+
+                if(!bprNumber.equals("NOCODE"))
+                {
                     //vendorCodeResult = sqlResults.GetBPNumber(gardenCenterModel.getBcxUniqueAccountNumber());
 
                     //TODO - (4) Calculate the Vat variance and report on the mismatch of 0.05c
@@ -365,6 +419,15 @@ public class CsvFile {
                                 gardenCenterModel.getInvoiceTotal(),
                                 comment));
                     }
+                }
+                else
+                {
+                    //TODO - Capture Error Audit record
+                    GlobalValues.auditJrnlModelList.add(new AuditJrnlModel(gardenCenterModel.getFileName(), gardenCenterModel.getTransactionNo(),
+                            gardenCenterModel.getTransactionDate(), gardenCenterModel.getInvoiceType(),
+                            gardenCenterModel.getBcxUniqueAccountNumber(),
+                            gardenCenterModel.getInvoiceTotal(),
+                            GardenCenterGlobals.NOVENDOPRLINKED.label + " for " + gardenCenterModel.getBcxUniqueAccountNumber()));
                 }
 
             } //End of gardenCenterModelList Loop
